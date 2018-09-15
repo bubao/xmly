@@ -17,7 +17,9 @@ $vim test/index.js
 ```
 
 ```js
-xmly(3152352, __dirname + "/list.txt","./");
+let xmly = require("../src/index")
+let fs = require("fs");
+; (async () => fs.writeFileSync("./list.txt", await xmly.Down(1732828)))();
 ```
 
 ### xmly接收三个参数

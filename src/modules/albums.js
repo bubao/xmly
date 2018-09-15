@@ -3,7 +3,7 @@
  * @description 
  * @date: 2018-09-14 19:08:02 
  * @Last Modified by: bubao
- * @Last Modified time: 2018-09-14 19:11:48
+ * @Last Modified time: 2018-09-15 11:52:28
  */
 const template = require("lodash/template");
 const concat = require("lodash/concat");
@@ -27,13 +27,15 @@ let getAlbumList = async (uid, pageSize, arr = [], pageNum = 1) => {
 exports.getAlbumList = getAlbumList;
 
 let getAlbums = async (albumList, list = []) => {
-    const item = albumList.splice(0, 1)[0];
-    list.push({
-        albumID: item.id,
-        title: item.title,
-        coverPath: item.coverPath
-    });
+
     if (albumList.length) {
+        const item = albumList.splice(0, 1)[0];
+        list.push({
+            albumID: item.id,
+            albumTitle: item.title,
+            coverPath: item.coverPath
+        });
+
         return await getAlbums(albumList, list);
     } else {
         return list;

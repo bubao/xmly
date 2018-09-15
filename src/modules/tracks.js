@@ -3,7 +3,7 @@
  * @description 单个专辑的下载链接
  * @date: 2018-06-27 18:11:17 
  * @Last Modified by: bubao
- * @Last Modified time: 2018-09-14 19:12:26
+ * @Last Modified time: 2018-09-15 11:44:51
  */
 const template = require("lodash/template");
 const concat = require("lodash/concat");
@@ -18,10 +18,14 @@ const { path, request } = require('../tools/commonModules');
  */
 const getTracksList = async (albumId, arr = [], pageNum = 1) => {
     const opts = {
-        uri: template(API.getTracksList)({ albumId, pageNum })
+        uri: template(API.getTracksList)({ albumId: albumId.albumID, pageNum })
     }
-
-    const body = JSON.parse((await request(opts)).body);
+    let body = (await request(opts)).body;
+    body = JSON.parse(body);
+    body.data.tracks = body.data.tracks.map(value => {
+        value.albumTitle = albumId.albumTitle;
+        return value;
+    })
     arr = concat(arr, body.data.tracks);
     if (!(body.data.tracks.length < 30) || pageNum * 30 === body.data.trackTotalCount) {
         return await getTracksList(albumId, arr, pageNum + 1);
@@ -55,15 +59,19 @@ const getTracksList = async (albumId, arr = [], pageNum = 1) => {
  * @param {Array} list 音频下载链接列表
  */
 const getTracks = async (tracksList, list = []) => {
-    const item = tracksList.splice(0, 1)[0];
-    const data = JSON.parse((await request({
-        uri: template(API.tracks)({ tracksID: path.basename(item.url) }),
-    })).body);
-    list.push({
-        uri: data.play_path_64,
-        title: item.title
-    })
+
     if (tracksList.length) {
+        const item = tracksList.splice(0, 1)[0];
+        let opts = {
+            uri: template(API.tracks)({ tracksId: path.basename(item.url) }),
+        }
+        let body = (await request(opts)).body
+        const data = JSON.parse(body);
+        list.push({
+            uri: data.play_path_64,
+            albumTitle: item.albumTitle,
+            title: item.title
+        })
         return await getTracks(tracksList, list);
     } else {
         return list;
