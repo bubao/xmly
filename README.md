@@ -19,7 +19,8 @@ $vim test/index.js
 ```js
 let xmly = require("../src/index")
 let fs = require("fs");
-; (async () => fs.writeFileSync("./list.txt", await xmly.Down(1732828)))();
+// (async () => fs.writeFileSync("Z:\\xmly/list.txt", await xmly.DownAlbums(1000341)))();
+(async () => fs.writeFileSync("Z:\\xmly/list.txt", await xmly.DownTracks(14129954)))();
 ```
 
 ### xmly接收三个参数
