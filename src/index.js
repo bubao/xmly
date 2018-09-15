@@ -3,7 +3,7 @@
  * @description 
  * @date: 2018-09-14 19:08:25 
  * @Last Modified by: bubao
- * @Last Modified time: 2018-09-15 11:49:38
+ * @Last Modified time: 2018-09-15 23:14:22
  */
 let tracks = require("./modules/tracks");
 let albums = require("./modules/albums");
@@ -24,10 +24,14 @@ let loop = async (al, arr = [], i = 0) => {
 		return await loop(al, arr, i++);
 	}
 }
-let Down = async (ID) => {
+let DownAlbums = async (ID) => {
 	let al = await albums(ID);
-	let trackArray = await loop(al)
+	let trackArray = await loop(al);
+	return aria2c(trackArray);
+}
 
+let DownTracks = async (ID) => {
+	let trackArray = await tracks(ID);
 	return aria2c(trackArray);
 }
 
@@ -35,7 +39,8 @@ let Down = async (ID) => {
 
 module.exports = {
 	tracks,
+	DownAlbums,
+	DownTracks,
 	albums,
 	aria2c,
-	Down,
 }
