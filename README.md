@@ -23,11 +23,15 @@ let fs = require("fs");
 (async () => fs.writeFileSync("Z:\\xmly/list.txt", await xmly.DownTracks(14129954)))();
 ```
 
-### xmly接收三个参数
+### API
 
-1. 专辑的id
-2. list.txt 文件的位置
-3. aria2下载音频的路径
+提供以下api
+
+- tracks(albumId),
+- albums(uid,pageSize=30),
+- DownAlbums(uid),
+- DownTracks(albumId),
+- aria2c(array,dir="./")
 
 ### 运行
 
@@ -36,6 +40,8 @@ $npm run test
 ```
 
 ### aria2 批量下载
+
+使用aria2c下载list中的资源。
 
 ```sh
 $aria2c -c --input-file=list.txt
