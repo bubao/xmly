@@ -3,10 +3,11 @@
  * @description 单个专辑的下载链接
  * @date: 2018-06-27 18:11:17 
  * @Last Modified by: bubao
- * @Last Modified time: 2018-09-15 11:44:51
+ * @Last Modified time: 2018-09-15 23:15:38
  */
 const template = require("lodash/template");
 const concat = require("lodash/concat");
+const isNumber = require("lodash/isNumber");
 const API = require("../api");
 const { path, request } = require('../tools/commonModules');
 
@@ -17,15 +18,31 @@ const { path, request } = require('../tools/commonModules');
  * @param {Number} pageNum 页数
  */
 const getTracksList = async (albumId, arr = [], pageNum = 1) => {
-    const opts = {
-        uri: template(API.getTracksList)({ albumId: albumId.albumID, pageNum })
+    let opts;
+    let single = false;
+    if (isNumber(albumId)) {
+        opts = {
+            uri: template(API.getTracksList)({ albumId: albumId, pageNum })
+        }
+        single = JSON.parse((await request({
+            uri: template(API.album)({ albumId })
+        })).body)
+    } else {
+        opts = {
+            uri: template(API.getTracksList)({ albumId: albumId.albumID, pageNum })
+        }
     }
+
     let body = (await request(opts)).body;
     body = JSON.parse(body);
     body.data.tracks = body.data.tracks.map(value => {
-        value.albumTitle = albumId.albumTitle;
+        if (single) {
+            value.albumTitle = single.data.mainInfo.albumTitle;
+        } else {
+            value.albumTitle = albumId.albumTitle;
+        }
         return value;
-    })
+    });
     arr = concat(arr, body.data.tracks);
     if (!(body.data.tracks.length < 30) || pageNum * 30 === body.data.trackTotalCount) {
         return await getTracksList(albumId, arr, pageNum + 1);
@@ -62,30 +79,27 @@ const getTracks = async (tracksList, list = []) => {
 
     if (tracksList.length) {
         const item = tracksList.splice(0, 1)[0];
-        let opts = {
-            uri: template(API.tracks)({ tracksId: path.basename(item.url) }),
+        if (item.url) {
+            let opts = {
+                uri: template(API.tracks)({ tracksId: path.basename(item.url) }),
+            }
+            let body = (await request(opts)).body
+            const data = JSON.parse(body);
+            list.push({
+                uri: data.play_path_64,
+                albumTitle: item.albumTitle,
+                title: item.title
+            });
         }
-        let body = (await request(opts)).body
-        const data = JSON.parse(body);
-        list.push({
-            uri: data.play_path_64,
-            albumTitle: item.albumTitle,
-            title: item.title
-        })
         return await getTracks(tracksList, list);
     } else {
         return list;
     }
 }
 
-// module.exports = async (albumId, path = "./list.txt", out) => {
-// 	const list = await getTracksList(albumId);
-// 	fs.writeFileSync(path, await getTracks(list, out));
-// }
-
 /**
  * 单个专辑的下载链接
- * @param {Number} albumId 专辑ID
+ * @param {Obj} albumId 专辑ID
  */
 module.exports = async (albumId) => {
     const tracksList = await getTracksList(albumId);
