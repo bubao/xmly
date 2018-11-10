@@ -4,6 +4,7 @@
 	"description": "",
 	"main": "index.js",
 	"dependencies": {
+		"filenamify": "^2.1.0",
 		"lodash": "^4.17.10",
 		"request": "^2.87.0"
 	},
