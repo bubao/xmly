@@ -6,7 +6,8 @@
 	"dependencies": {
 		"filenamify": "^2.1.0",
 		"lodash": "^4.17.10",
-		"request": "^2.87.0"
+		"request": "^2.87.0",
+		"self-promise-request": "git+https://github.com/bubao/self-promise-request.git"
 	},
 	"devDependencies": {},
 	"scripts": {
