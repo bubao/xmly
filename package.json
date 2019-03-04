@@ -1,18 +1,32 @@
 {
-	"name": "xmly",
-	"version": "0.0.1",
-	"description": "",
-	"main": "index.js",
-	"dependencies": {
-		"filenamify": "^2.1.0",
-		"lodash": "^4.17.10",
-		"request": "^2.87.0",
-		"self-promise-request": "git+https://github.com/bubao/self-promise-request.git"
-	},
-	"devDependencies": {},
-	"scripts": {
-		"test": "node test/index.js"
-	},
-	"author": "bubao",
-	"license": "MIT"
+  "name": "xmly",
+  "version": "0.0.1",
+  "description": "喜马拉雅API，可以获得音频下载链接",
+  "main": "index.js",
+  "dependencies": {
+    "filenamify": "^2.1.0",
+    "lodash": "^4.17.11",
+    "request": "^2.87.0",
+    "self-promise-request": "git+https://github.com/bubao/self-promise-request.git"
+  },
+  "devDependencies": {},
+  "scripts": {
+    "test": "node test/index.js"
+  },
+  "author": "bubao",
+  "license": "MIT",
+  "directories": {
+    "test": "test"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/bubao/xmly.git"
+  },
+  "keywords": [
+    "xmly"
+  ],
+  "bugs": {
+    "url": "https://github.com/bubao/xmly/issues"
+  },
+  "homepage": "https://github.com/bubao/xmly#readme"
 }
