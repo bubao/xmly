@@ -3,42 +3,31 @@
  * @description 
  * @date: 2018-09-14 19:08:25 
  * @Last Modified by: bubao
- * @Last Modified time: 2018-11-11 11:08:40
+ * @Last Modified time: 2019-03-04 12:54:37
  */
-let tracks = require("./src/modules/tracks");
-let albums = require("./src/modules/albums");
-let aria2c = require("./src/tools/aria2c");
-let _ = require("lodash");
-let loop = async (al, arr = [], i = 0) => {
+const tracks = require("./src/modules/tracks");
+const getAlbums = require("./src/modules/albums");
+const { aria2c } = require("./src/tools/commonModules");
+const concat = require("lodash/concat");
+const loop = async (albumsList, arr = [], i = 0) => {
 
-	if (al.length === 0) {
-		return arr
-	} else {
-		let item = al.splice(0, 1)[0];
+	if (albumsList.length === 0)
+		return arr;
+	return await loop(albumsList, concat(arr, await tracks(albumsList.splice(0, 1)[0])), i++);
+};
 
-		let c = await tracks(item);
-		arr = _.concat(arr, c);
-		return await loop(al, arr, i++);
-	}
-}
-let DownAlbums = async (ID) => {
-	let al = await albums(ID);
-	let trackArray = await loop(al);
-	return aria2c(trackArray);
-}
+const albums = async (albumsID) => await loop(await getAlbums(albumsID));
 
-let DownTracks = async (ID) => {
-	let trackArray = await tracks(ID);
-	return aria2c(trackArray);
-}
+const downAlbums = async (albumsID) => aria2c(await albums(albumsID));
 
-
+const downTracks = async (tracksID) => aria2c(await tracks(tracksID));
 
 module.exports = {
 	loop,
-	tracks,
-	DownAlbums,
-	DownTracks,
 	albums,
+	tracks,
+	getAlbums,
+	downAlbums,
+	downTracks,
 	aria2c,
 }

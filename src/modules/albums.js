@@ -1,50 +1,50 @@
 /**
  * @author bubao 
- * @description 
+ * @description 获取所有专辑列表
  * @date: 2018-09-14 19:08:02 
  * @Last Modified by: bubao
- * @Last Modified time: 2018-09-15 11:52:28
+ * @Last Modified time: 2019-03-04 12:50:15
  */
 const template = require("lodash/template");
 const concat = require("lodash/concat");
 const API = require("../api");
 const { request } = require('../tools/commonModules');
 
-
-let getAlbumList = async (uid, pageSize, arr = [], pageNum = 1) => {
-    const opts = {
-        uri: template(API.pub)({ uid, pageSize, pageNum })
-    }
-    const body = JSON.parse((await request(opts)).body);
-    arr = concat(arr, body.data.albumList);
-    if (!(body.data.albumList.length < pageSize) || pageNum * pageSize === body.data.trackTotalCount) {
-        return await getAlbumList(uid, pageSize, arr, pageNum + 1);
-    } else {
-        return arr;
-    }
+/**
+ * @description
+ * @author bubao
+ * @param {number|string} uid
+ * @param {number} pageSize
+ * @param {any} [arr=[]]
+ * @param {number} [pageNum=1]
+ * @returns
+ */
+async function getAlbumList(uid, pageSize, arr = [], pageNum = 1) {
+	const body = JSON.parse((await request({ uri: template(API.pub)({ uid, pageSize, pageNum }) })).body);
+	arr = concat(arr, body.data.albumList);
+	if (!(body.data.albumList.length < pageSize) || pageNum * pageSize === body.data.trackTotalCount)
+		return await getAlbumList(uid, pageSize, arr, pageNum + 1);
+	return arr;
 }
 
-exports.getAlbumList = getAlbumList;
+/**
+ * @description
+ * @author bubao
+ * @param {array} albumList
+ * @param {array} [list=[]]
+ * @returns
+ */
+async function getAlbums(albumList, list = []) {
 
-let getAlbums = async (albumList, list = []) => {
-
-    if (albumList.length) {
-        const item = albumList.splice(0, 1)[0];
-        list.push({
-            albumID: item.id,
-            albumTitle: item.title,
-            coverPath: item.coverPath
-        });
-
-        return await getAlbums(albumList, list);
-    } else {
-        return list;
-    }
+	if (albumList.length === 0)
+		return list;
+	const { id, title, coverPath } = albumList.splice(0, 1)[0];
+	list.push({
+		albumID: id,
+		albumTitle: title,
+		coverPath: coverPath
+	});
+	return await getAlbums(albumList, list);
 }
 
-module.getAlbums = getAlbums;
-
-module.exports = async (uid, pageSize = 30) => {
-    let albumList = await getAlbumList(uid, pageSize);
-    return await getAlbums(albumList);
-}
+module.exports = async (uid, pageSize = 30) => await getAlbums(await getAlbumList(uid, pageSize));
