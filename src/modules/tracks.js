@@ -25,15 +25,18 @@ const getTracksList = async (albumId, arr = [], pageNum = 1) => {
 			uri: template(API.getTracksList)({ albumId: albumId, pageNum }),
 			headers: API.headers
 		}
-		single = JSON.parse((await request({
+		const album = await request({
 			uri: template(API.album)({ albumId })
-		})).body);
+		})
+		// console.log(album.body)
+		single = JSON.parse(album.body);
 	} else {
 		opts = {
 			uri: template(API.getTracksList)({ albumId: albumId.albumID, pageNum }),
 			headers: API.headers
 		}
 	}
+	// console.log("++++opts",opts)
 
 	let { body, error } = await request(opts);
 	body = JSON.parse(body);
@@ -47,6 +50,7 @@ const getTracksList = async (albumId, arr = [], pageNum = 1) => {
 		return value;
 	});
 	arr = concat(arr, body.data.tracks);
+	console.log(arr.length)
 	if (!(body.data.tracks.length < 30) || pageNum * 30 === body.data.trackTotalCount) {
 		return await getTracksList(albumId, arr, pageNum + 1);
 	} else {
@@ -79,6 +83,7 @@ const getTracks = async (tracksList, list = []) => {
 		}
 		return await getTracks(tracksList, list);
 	} else {
+		console.log(list.length)
 		return list;
 	}
 }

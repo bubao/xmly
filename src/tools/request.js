@@ -9,11 +9,28 @@
 const EventEmitter = require('events');
 const Request = require('request');
 const fs = require('fs');
+const sign = require('./sign')
 
 class PromisRequest extends EventEmitter {
-	request(options) {
+	constructor(){
+		super()
+		this.request = this.request.bind(this)
+	}
+	static init() {
+		if (!this.instance) {
+			this.instance = new this();
+		}
+		return this.instance;
+	}
+
+	async request(options) {
+		if (!this.sign) {
+			
+			this.sign = await sign()
+		}
 		return new Promise((resolve) => {
 			const { pipe, hiden, time, size, readable, ...opts } = options;
+			opts.headers = {...opts.headers ,'xm-sign':this.sign};
 			const start = startNum(time);
 			let read = getRead(options);
 			let response = 0;

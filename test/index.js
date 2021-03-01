@@ -9,5 +9,5 @@ let xmly = require("../index")
 // let fs = require("fs");
 // (async () => fs.writeFileSync("Z:\\xmly/1000341.txt", await xmly.downAlbums(1000341)))();
 // (async () => fs.writeFileSync("./14129954.txt", await xmly.downTracks(14129954)))();
-xmly.tracks(21095119).then(res => console.log(res))
+xmly.tracks(323366).then()
 // xmly(3152352, __dirname + "/list.txt")
